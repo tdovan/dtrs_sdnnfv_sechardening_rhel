@@ -1,0 +1,9 @@
+---
+uncommon_filesystems_kernel_modules_disable:
+  - 'freevxfs'
+  - 'cramfs'
+  - 'squashfs'
+  - 'hfsplus'
+  - 'jffs2'
+  - 'hfs'
+  - 'udf'

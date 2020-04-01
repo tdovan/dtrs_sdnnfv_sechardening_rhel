@@ -1,0 +1,4 @@
+---
+ANSSI_linux_login_defs_dict:
+  - { keyword: 'ENCRYPT_METHOD' , argument: 'SHA512' }
+  - { keyword: 'SHA_CRYPT_MIN_ROUNDS' , argument: '65536' }

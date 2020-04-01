@@ -1,0 +1,6 @@
+---
+- name: RedHat Linux Hardening Playbook for DTRS SDNNFV projects
+  hosts: server
+  become: true
+  roles:
+    - dtrs_sdnnfv_sechardening_rhel

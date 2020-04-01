@@ -1,0 +1,67 @@
+---
+- name: Including variables
+  include_vars:
+    file: vars/AIDE_configuration.yml
+
+- name: "Ensure AIDE is installed"
+  package:
+    name="{{item}}"
+    state=present
+  with_items:
+    - aide
+  
+
+- name: Verify that AIDE configuration file exists
+  stat:
+    path: "{{ aide_configuration_file }}"
+  register: aide_conf
+  check_mode: no
+
+# ???
+#Exclure les répertoires listés dans le fichier de variables ????
+# ???
+- name: Exclude some directories to limit false positives
+  lineinfile:
+    dest: "{{ aide_configuration_file }}"
+    regexp: '(?i)^(\s*)!{{ item }}(.*)'
+    line: "!{{ item }}"
+    create: false
+    state: present
+  loop: "{{ security_aide_exclude_dirs }}"
+
+
+- name: Check to see if AIDE database is already in place
+  stat:
+    path: "{{ aide_database_file }}"
+  register: aide_database
+  check_mode: no
+
+- name: Initialize AIDE (this will take a few minutes)
+  # NOTE(hwoarang): aideinit is an Ubuntu wrapper. An alternative
+  # would be to use aideinit || aide -i but that will possibly mask
+  # genuine aideinit failures.
+  shell: "if test -x /usr/sbin/aideinit; then aideinit; else aide -i; fi"
+  changed_when: false
+  register: aide_init
+  when:
+    - aide_conf.stat.exists | bool
+    - not aide_database.stat.exists | bool
+
+# NOTE(mhayden): This is only needed for CentOS 7, RHEL 7 and SUSE since Ubuntu
+# copies the new AIDE database into place automatically with its AIDE wrapper
+# script.
+- name: Move AIDE database into place
+  command: "mv {{ aide_database_out_file }} {{ aide_database_file }}"
+  changed_when: false
+  when:
+    - aide_init is not skipped
+
+
+- name: "Configure Periodic Execution of AIDE"
+  cron:
+    name: "run AIDE check"
+    minute: "{{ AIDE_CRON_minute }}"
+    hour: "{{ AIDE_CRON_hour }}"
+    weekday: "{{ AIDE_CRON_weekday }}"
+    user: root
+    job: "/usr/sbin/aide --check"

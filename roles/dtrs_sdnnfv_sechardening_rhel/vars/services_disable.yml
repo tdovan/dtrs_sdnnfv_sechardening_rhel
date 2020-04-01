@@ -1,0 +1,5 @@
+---
+services_to_disable:
+  - 'rpcbind'
+  - 'xinetd'
+

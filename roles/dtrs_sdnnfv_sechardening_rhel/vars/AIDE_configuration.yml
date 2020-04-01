@@ -1,0 +1,11 @@
+---
+AIDE_CRON_minute: 05
+AIDE_CRON_hour: 04
+AIDE_CRON_weekday: 0
+
+security_aide_exclude_dirs:
+  - /etc/libvirt/qemu/
+ # - /openstack
+ # - /opt
+ # - /run
+ # - /var

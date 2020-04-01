@@ -1,0 +1,23 @@
+---
+- name: Including variables
+  include_vars:
+    file: vars/IP_configuration.yml
+
+- name: "Configure IPv4 and IPv6 parameters"
+  sysctl:
+    name:  "{{ item.keyword }}"
+    value: "{{ item.argument }}"
+    state: present
+    reload: yes
+  loop: "{{ IP_configiguration_sysctl_dict }}"
+  loop_control:
+    label: "{{ item.keyword }}  {{ item.argument }}"
+
+- name: Disable kernel modules
+  lineinfile:
+    create=yes
+    dest="/etc/modprobe.d/{{item}}.conf"
+    regexp="{{item}}"
+    line="install {{item}} /bin/true"
+  loop: "{{ IP_configuration_kernel_modules_disable }}"
+

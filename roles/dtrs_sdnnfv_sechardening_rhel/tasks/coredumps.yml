@@ -1,0 +1,21 @@
+---
+- name: "Set coredump size to 0"
+  lineinfile:
+    dest: "{{ security_limits_file }}"
+    regexp: '(?i)^(.*)core(.*)'
+    line: "*  hard  core  0"
+    create: yes
+
+- name: "Set sysctl fs.suid_dumpable to 0"
+  sysctl:
+    name:  fs.suid_dumpable
+    value: 0
+    state: present
+    reload: yes
+
+- name: "Add fs.suid_dumpable parameter to sysctl.conf file"
+  lineinfile:
+    dest: "{{ sysctl_conf_file }}"
+    regexp: '(?i)^(.*)fs.suid_dumpable(.*)'
+    line: "fs.suid_dumpable=0"
+    create: yes

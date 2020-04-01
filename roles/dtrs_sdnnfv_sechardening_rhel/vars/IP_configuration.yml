@@ -1,0 +1,16 @@
+---
+IP_configiguration_sysctl_dict:
+  - { keyword: 'net.ipv6.conf.all.disable_ipv6', argument: '1' }
+  - { keyword: 'net.ipv4.icmp_echo_ignore_broadcasts', argument: '1' }
+  - { keyword: 'net.ipv4.tcp_syncookies', argument: '1' }
+  - { keyword: 'net.ipv4.conf.all.accept_redirects', argument: '0' }
+  - { keyword: 'net.ipv4.icmp_ignore_bogus_error_responses', argument: '1' }
+  - { keyword: 'net.ipv4.conf.default.log_martians', argument: '1' }
+  - { keyword: 'net.ipv4.conf.all.log_martians', argument: '1' }
+  - { keyword: 'net.ipv4.conf.default.secure_redirects', argument: '0' }
+  - { keyword: 'net.ipv4.conf.all.secure_redirects', argument: '0' }
+  - { keyword: 'net.ipv4.conf.default.accept_redirects', argument: '0' }
+
+IP_configuration_kernel_modules_disable:
+  - 'dccp'
+  - 'sctp'

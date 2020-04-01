@@ -1,0 +1,52 @@
+---
+
+- name: Yum Update
+  yum:
+    name: '*'
+    state: present
+    security: true
+  register: result
+  when: Install_Security_Updates == 'yes'
+
+- include: ANSSI_linux_R32.yml
+  tags: ANSSI_linux_R32
+
+- include: auditd_configuration.yml
+  tags: auditd_configuration
+
+- include: bluetooth.yml
+  tags: bluetooth
+
+- include: coredumps.yml
+  tags: coredumps
+
+- include: IP_configuration.yml
+  tags: IP_configuration
+
+- include: local_users_password.yml
+  tags: local_users_password
+
+- include: RS404-2100.yml
+  tags: RS404-2100
+
+- include: RS404-2200.yml
+  tags: RS404-2200
+
+- include: rsyslog_remote_loghost.yml
+  tags: rsyslog_remote_loghost
+
+- include: services_disable.yml
+  tags: services_disable
+
+- include: uncommon_filesystems.yml
+  tags: uncommon_filesystems
+
+- include: usb-storage.yml
+  tags: usb-storage
+  
+- include: yum_gpgcheck.yml
+  tags: yum_gpgcheck
+
+#Garder AIDE à la fin pour ne pas modifier de fichiers après la génération de sa base de données
+- include: AIDE_configuration.yml
+  tags: AIDE_configuration

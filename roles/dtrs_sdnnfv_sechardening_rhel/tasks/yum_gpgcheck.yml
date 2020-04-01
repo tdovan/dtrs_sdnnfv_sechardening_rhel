@@ -1,0 +1,30 @@
+---
+- name: "Find all yum repositories"
+  find:
+    paths: "/etc/yum.repos.d/"
+    patterns: "*.repo"
+    excludes: "redhat.repo"
+  register: yum_find
+
+- name: "Ensure gpgcheck is enabled for all yum package repositories"
+  lineinfile:
+    create: yes
+    dest: "{{ item.path }}"
+    regexp: '^gpgcheck'
+    line: 'gpgcheck = 1'
+  with_items: 
+    - "{{ yum_find.files }}"
+
+- name: "Ensure gpgcheck is enabled for repository metadata"
+  lineinfile:
+    create: yes
+    dest: /etc/yum.conf
+    regexp: '^repo_gpgcheck'
+    line: 'repo_gpgcheck=1'
+
+- name: "Ensure gpgcheck is enabled for local packages"
+  lineinfile:
+    create: yes
+    dest: /etc/yum.conf
+    regexp: '^localpkg_gpgcheck'
+    line: 'localpkg_gpgcheck=1'

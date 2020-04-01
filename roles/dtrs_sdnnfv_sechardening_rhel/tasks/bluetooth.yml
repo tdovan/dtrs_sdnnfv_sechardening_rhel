@@ -1,0 +1,8 @@
+---
+- name: Disable kernel modules for Bluetooth support
+  lineinfile:
+    create=yes
+    dest="/etc/modprobe.d/bluetooth.conf"
+    regexp="bluetooth"
+    line="install bluetooth /bin/true"
+  

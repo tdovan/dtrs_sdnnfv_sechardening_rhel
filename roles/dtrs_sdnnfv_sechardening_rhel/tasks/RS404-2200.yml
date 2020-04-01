@@ -1,0 +1,32 @@
+---
+- name: "RS404-2200 Modify all users umask in /etc/bashrc"
+  lineinfile:
+    dest: /etc/bashrc
+    regexp: '(?i)^(\s*)umask 002(.*)'
+    line: "umask 027"
+    create: false
+    state: present
+
+- name: "RS404-2200 Modify root umask in /etc/bashrc"
+  lineinfile:
+    dest: /etc/bashrc
+    regexp: '(?i)^(\s*)umask 022(.*)'
+    line: "umask 077"
+    create: false
+    state: present
+
+- name: "RS404-2200 Modify all users umask in /etc/profile"
+  lineinfile:
+    dest: /etc/profile
+    regexp: '(?i)^(\s*)umask 002(.*)'
+    line: "umask 027"
+    create: false
+    state: present
+
+- name: "RS404-2200 Modify root umask in /etc/profile"
+  lineinfile:
+    dest: /etc/profile
+    regexp: '(?i)^(\s*)umask 022(.*)'
+    line: "umask 077"
+    create: false
+    state: present

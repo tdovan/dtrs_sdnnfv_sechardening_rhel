@@ -1,0 +1,15 @@
+---
+- name: Including variables
+  include_vars:
+    file: vars/ANSSI_linux_R32.yml
+
+- name: "ANSSI DAT-NT-28: R32, configure passwords encrypt method"
+  lineinfile:
+    dest: "{{ login_defs_file }}"
+    regexp: '(?i)^(\s*){{ item.keyword }}(.*)'
+    line: "{{ item.keyword }} {{ item.argument }}"
+    create: false
+    state: present
+  loop: "{{ ANSSI_linux_login_defs_dict }}"
+  loop_control:
+    label: "{{ item.keyword }}  {{ item.argument }}"

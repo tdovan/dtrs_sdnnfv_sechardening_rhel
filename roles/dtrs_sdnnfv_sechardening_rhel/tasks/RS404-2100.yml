@@ -1,0 +1,9 @@
+---
+- name: RS04-2100 Limit root access using console on tty1
+  copy:
+    src: vars/securetty
+    dest: /etc/securetty
+    owner: root
+    group: root
+    mode: 0600
+    backup: yes

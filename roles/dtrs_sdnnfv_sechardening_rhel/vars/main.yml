@@ -1,0 +1,13 @@
+---
+aide_database_file: /var/lib/aide/aide.db.gz
+aide_database_out_file: /var/lib/aide/aide.db.new.gz
+aide_configuration_file: /etc/aide.conf
+auditd_conf_file: /etc/audit/auditd.conf
+auditd_rules_file: /etc/audit/rules.d/auditd.rules
+login_defs_file: /etc/login.defs
+pwquality_file: /etc/security/pwquality.conf
+rsyslog_config_file: /etc/rsyslog.conf
+security_limits_file: /etc/security/limits.conf
+ssh_config_file: /etc/ssh/ssh_config
+sshd_config_file: /etc/ssh/sshd_config
+sysctl_conf_file: /etc/sysctl.conf

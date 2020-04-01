@@ -1,0 +1,15 @@
+---
+- name: Including variables
+  include_vars:
+    file: vars/services_disable.yml
+
+- name: "Disable dangerous services"
+  service:
+    name="{{item}}"
+    enabled="no"
+    state="stopped"
+  ignore_errors: True
+  loop: "{{ services_to_disable }}"
+  register: service_result
+
+  

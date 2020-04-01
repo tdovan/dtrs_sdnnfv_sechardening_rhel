@@ -1,0 +1,13 @@
+---
+- name: Including variables
+  include_vars:
+    file: vars/uncommon_filesystems.yml
+
+- name: Disable kernel modules for uncommon filesystems
+  lineinfile:
+    create=yes
+    dest="/etc/modprobe.d/{{item}}.conf"
+    regexp="{{item}}"
+    line="install {{item}} /bin/true"
+  loop: "{{ uncommon_filesystems_kernel_modules_disable }}"
+

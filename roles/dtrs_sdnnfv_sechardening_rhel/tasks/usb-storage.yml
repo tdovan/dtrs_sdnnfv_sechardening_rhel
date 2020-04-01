@@ -1,0 +1,8 @@
+---
+- name: Disable kernel modules for usb-storage support
+  lineinfile:
+    create=yes
+    dest="/etc/modprobe.d/usb-storage.conf"
+    regexp="usb-storage"
+    line="install usb-storage /bin/true"
+  

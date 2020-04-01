@@ -1,0 +1,3 @@
+---
+#### Yum Update Security ####
+Install_Security_Updates: 'no'   # If 'yes', install security updates

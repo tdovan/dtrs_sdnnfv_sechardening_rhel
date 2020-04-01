@@ -1,0 +1,87 @@
+---
+- name: Including variables
+  include_vars:
+    file: vars/auditd_configuration.yml
+
+# 1. Configuration de auditd.conf
+
+- name: "Configuration of auditd.conf"
+  lineinfile:
+    dest: "{{ auditd_conf_file }}"
+    regexp: '(?i)^(\s*){{ item.keyword }}(.*)'
+    line: "{{ item.keyword }} = {{ item.argument }}"
+    create: false
+    state: present
+  loop: "{{ auditd_configuration_dict }}"
+  loop_control:
+    label: "{{ item.keyword }} = {{ item.argument }}"
+
+# 2. Mise en place des règles de surveillance du système
+# Récupération de l'architecture pour appliquer ou non les règles concernant les systèmes 64bits
+
+- name: Set architecture for audit open tasks
+  set_fact:
+    audit_arch: "b{{ ansible_architecture | regex_replace('.*(\\d\\d$)','\\1') }}"
+
+# Ajout des règles auditd 32bits et 64bits si nécessaire
+- name: "Add auditd 32bits rules"
+  lineinfile:
+    dest: "{{ auditd_rules_file }}"
+    regexp: '(?i)^(\s*){{ item }}(.*)'
+    line: "{{ item }}"
+    create: yes
+    state: present
+  loop: "{{ auditd_commands_b32_dict }}"
+
+- name: "Add auditd 64bits rules"
+  lineinfile:
+    dest: "{{ auditd_rules_file }}"
+    regexp: '(?i)^(\s*){{ item }}(.*)'
+    line: "{{ item }}"
+    create: yes
+    state: present
+  loop: "{{ auditd_commands_b64_dict }}"
+  when: audit_arch == 'b64'
+
+# Récupération des commandes pour lesquelles setuid ou setgid sont positionnés
+
+- name: Search for privileged commands (except in Docker containers)
+  shell: "find / -xdev -type f -perm -4000 -o -type f -perm -2000 2>/dev/null | grep -v docker | cat"
+  check_mode: no
+  register: find_result
+
+# Inserts/replaces the rule in /etc/audit/rules.d
+
+- name: Search /etc/audit/rules.d for audit rule entries
+  find:
+    paths: "/etc/audit/rules.d"
+    recurse: no
+    contains: "^.*path={{ item }} .*$"
+    patterns: "*.rules"
+  with_items:
+    - "{{ find_result.stdout_lines }}"
+  register: files_result
+  
+- name: Overwrites the rule in rules.d
+  lineinfile:
+    path: "{{ item.1.path }}"
+    line: '-a always,exit -F path={{ item.0.item }} -F perm=x -F auid>=1000 -F auid!=4294967295 -F key=privileged'
+    create: no
+    regexp: "^.*path={{ item.0.item }} .*$"
+  with_subelements:
+    - "{{ files_result.results }}"
+    - files
+    
+- name: Adds the rule in rules.d
+  lineinfile:
+    path: /etc/audit/rules.d/privileged.rules
+    line: '-a always,exit -F path={{ item.item }} -F perm=x -F auid>=1000 -F auid!=4294967295 -F key=privileged'
+    create: yes
+  with_items:
+    - "{{ files_result.results }}"
+  when: item.matched == 0
+
+# 3. Ajout du paramètre audit=1 à la commande de lancement de Grub
+
+- name: "Enable Auditing for Processes Which Start Prior to the Audit Daemon"
+  shell: /sbin/grubby --update-kernel=ALL --args="audit=1"
